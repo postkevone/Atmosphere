@@ -20,6 +20,7 @@
 
 #include "emummc.h"
 #include "emummc_ctx.h"
+#include "emummc_emmc.h"
 #include "../utils/fatal.h"
 #include "../libs/fatfs/diskio.h"
 
@@ -319,6 +320,9 @@ int sdmmc_nand_get_active_partition_index()
 
 static uint64_t emummc_read_write_inner(void *buf, unsigned int sector, unsigned int num_sectors, bool is_write)
 {
+    if (emummc_emmc_is_active())
+        return emummc_emmc_read_write(buf, sector, num_sectors, is_write);
+
     if (emuMMC_ctx.EMMC_Type == emuMMC_SD_Raw)
     {
         // raw partition sector offset: emuMMC_ctx.EMMC_StoragePartitionOffset.
@@ -440,6 +444,7 @@ uint64_t sdmmc_wrapper_controller_close(int mmc_id)
         {
             // Close file handles and unmount
             _file_based_emmc_finalize();
+            emummc_emmc_finalize();
 
             // Close SD
             sdmmc_accessor_get(FS_SDMMC_SD)->vtab->sdmmc_accessor_controller_close(sdmmc_accessor_get(FS_SDMMC_SD));

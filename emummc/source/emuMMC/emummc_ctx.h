@@ -33,6 +33,7 @@ enum emuMMC_Type
     emuMMC_SD_Raw,
     // SD Device File
     emuMMC_SD_File,
+    emuMMC_EMMC_Raw,
 
     emuMMC_MAX
 };
