@@ -6,7 +6,7 @@ The feature is ported from [NaGaa95/Atmosphere-Pro](https://github.com/NaGaa95/A
 
 ## Configuration
 
-emuMMC is still configured in `sdmc:/emummc/emummc.ini`. The value `enabled=4` selects an emuMMC partition on the eMMC. This is the same value hekate uses for eMMC-based emuMMC.
+emuMMC is still configured in `sdmc:/emummc/emummc.ini`. The value `enabled=4` selects an emuMMC partition on the eMMC. This is the convention of [hekate-pro](https://github.com/NaGaa95/hekate-pro), also supported by the matching hekate fork ([postkevone/hekate](https://github.com/postkevone/hekate), branch `emmc-emummc`). Upstream hekate does **not** support it: it treats `enabled=4` like `enabled=1` (SD).
 
 ```ini
 [emummc]
@@ -23,7 +23,7 @@ nintendo_path=emuMMC/<folder>/Nintendo
 | `id` | emuMMC id, same as upstream. |
 | `nintendo_path` | `Nintendo` folder on the **SD card** used by this emuMMC, same as upstream. If empty, `emummc/Nintendo_<id>` is used. |
 
-The partition uses the usual raw emuMMC layout: BOOT0 (4 MiB), then BOOT1 (4 MiB), then the user area (GPP) image. Create the partition with a tool that writes this layout and the matching `emummc.ini` (for example hekate's eMMC emuMMC support, which also uses `enabled=4`). Use the `sector` value that tool writes.
+The partition uses the usual raw emuMMC layout: BOOT0 (4 MiB), then BOOT1 (4 MiB), then the user area (GPP) image. Create the partition with hekate-pro: its partition manager shrinks sysNAND `USER` and adds the `emummc` partition after it (which passes the overlap check below), and its emuMMC tool writes `emummc.ini` with `enabled=4` and the right `sector`. To boot HOS through hekate's own launcher instead of `fusee.bin`, use the hekate fork, with `fss0` pointing at this fork's `package3`.
 
 Upstream Atmosphère treats any non-zero `enabled` value as "SD emuMMC". With upstream, `enabled=4` would therefore try to boot an SD emuMMC at that sector. This fork handles the value correctly.
 
@@ -99,7 +99,7 @@ Conflicts can only happen at the hook lines listed above. The areas most likely 
 ## Testing
 
 1. Build: `docker build -t ams-build .`, then `docker run --rm -v "$PWD":/src -w /src ams-build make`.
-2. Create an eMMC emuMMC partition with hekate. Check that `emummc.ini` has `enabled=4` and the right `sector`.
+2. Create an eMMC emuMMC partition with hekate-pro. Check that `emummc.ini` has `enabled=4` and the right `sector`.
 3. Boot fusee. In emuMMC, change something visible (for example the console nickname) and confirm that sysNAND does not show the change.
 4. Boot sysNAND and confirm it is unaffected.
 5. Regression: SD partition (`enabled=1` + `sector`) and SD file-based (`enabled=1` + `path`) emuMMC still boot.
