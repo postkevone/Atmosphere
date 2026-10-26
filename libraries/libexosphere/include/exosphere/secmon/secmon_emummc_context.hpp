@@ -22,6 +22,7 @@ namespace ams::secmon {
         EmummcType_None      = 0,
         EmummcType_Partition = 1,
         EmummcType_File      = 2,
+        EmummcType_PartitionEmmc = 3,
     };
 
     enum EmummcMmc {

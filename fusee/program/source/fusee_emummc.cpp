@@ -15,6 +15,7 @@
  */
 #include <exosphere.hpp>
 #include "fusee_emummc.hpp"
+#include "fusee_emummc_emmc.hpp"
 #include "fusee_mmc.hpp"
 #include "fusee_sd_card.hpp"
 #include "fusee_fatal.hpp"
@@ -288,6 +289,8 @@ namespace ams::nxboot {
                 /* Create partitions. */
                 g_boot0_storage = AllocateObject<fs::FileHandleStorage>(boot0_file);
                 g_user_storage  = AllocateObject<EmummcFileStorage>(user00_file, len + 1);
+            } else if (emummc_cfg.base_cfg.type == secmon::EmummcType_PartitionEmmc) {
+                InitializeEmmcEmummcStorages(g_mmc_user_storage, emummc_cfg, std::addressof(g_boot0_storage), std::addressof(g_user_storage));
             } else {
                 ShowFatalError("Unknown emummc type %d\n", static_cast<int>(emummc_cfg.base_cfg.type));
             }

@@ -27,6 +27,7 @@
 #include "fusee_malloc.hpp"
 #include "fusee_secmon_sync.hpp"
 #include "fusee_stratosphere.hpp"
+#include "fusee_emummc_emmc.hpp"
 #include "fs/fusee_fs_api.hpp"
 
 namespace ams::nxboot {
@@ -130,6 +131,7 @@ namespace ams::nxboot {
 
             /* Parse ini. */
             bool enabled = false;
+            bool on_emmc = false;
             u32 id = 0;
             u32 sector = 0;
             const char *path = "";
@@ -147,6 +149,7 @@ namespace ams::nxboot {
                         for (const auto &entry : section.kv_list) {
                             if (std::strcmp(entry.key, "enabled") == 0) {
                                 enabled = entry.value[0] != '0';
+                                on_emmc = IsEmmcEmummcEnabledValue(entry.value);
                             } else if (std::strcmp(entry.key, "id") == 0) {
                                 id = ParseHexInteger(entry.value);
                             } else if (std::strcmp(entry.key, "sector") == 0) {
@@ -167,7 +170,9 @@ namespace ams::nxboot {
             g_emummc_cfg.emu_dir_path.str[sizeof(g_emummc_cfg.emu_dir_path.str) - 1] = '\x00';
 
             if (enabled) {
-                if (sector > 0) {
+                if (on_emmc) {
+                    ConfigureEmmcEmummc(g_emummc_cfg, sector);
+                } else if (sector > 0) {
                     g_emummc_cfg.base_cfg.type = secmon::EmummcType_Partition;
                     g_emummc_cfg.partition_cfg.start_sector = sector;
                 } else if (path[0] != '\x00' && IsDirectoryExist(path)) {

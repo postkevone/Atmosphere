@@ -480,6 +480,7 @@ namespace ams::secmon::smc {
                     /* No additional configuration needs to be copied. */
                     break;
                 case EmummcType_Partition:
+                case EmummcType_PartitionEmmc:
                     /* Copy the partition config. */
                     static_assert(sizeof(cfg.base_cfg) + sizeof(cfg.partition_cfg) <= InlineOutputSize);
                     std::memcpy(inline_output + sizeof(cfg.base_cfg), std::addressof(cfg.partition_cfg), sizeof(cfg.partition_cfg));
