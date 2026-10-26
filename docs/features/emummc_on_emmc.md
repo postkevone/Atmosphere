@@ -23,7 +23,7 @@ nintendo_path=emuMMC/<folder>/Nintendo
 | `id` | emuMMC id, same as upstream. |
 | `nintendo_path` | `Nintendo` folder on the **SD card** used by this emuMMC, same as upstream. If empty, `emummc/Nintendo_<id>` is used. |
 
-The partition uses the usual raw emuMMC layout: BOOT0 (4 MiB), then BOOT1 (4 MiB), then the user area (GPP) image. Create the partition with hekate-pro: its partition manager shrinks sysNAND `USER` and adds the `emummc` partition after it (which passes the overlap check below), and its emuMMC tool writes `emummc.ini` with `enabled=4` and the right `sector`. To boot HOS through hekate's own launcher instead of `fusee.bin`, use the hekate fork, with `fss0` pointing at this fork's `package3`.
+The partition uses the usual raw emuMMC layout: BOOT0 (4 MiB), then BOOT1 (4 MiB), then the user area (GPP) image. Create the partition with hekate-pro: its partition manager shrinks sysNAND `USER` and adds the `emummc` partition after it (which passes the overlap check below), and its emuMMC tool writes `emummc.ini` with `enabled=4` and the right `sector`. To boot HOS through hekate's own launcher instead of `fusee.bin`, use the hekate fork, with `pkg3=` pointing at this fork's `package3`.
 
 Upstream Atmosphère treats any non-zero `enabled` value as "SD emuMMC". With upstream, `enabled=4` would therefore try to boot an SD emuMMC at that sector. This fork handles the value correctly.
 
